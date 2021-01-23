@@ -17,8 +17,8 @@ void draw() {
     for (int y = 0; y < 10; y++) {
       // Populate grid.
       if (cells[x][y] == 1) {
-        int gridX = x * size;
-        int gridY = y * size;
+        int gridX = cell_to_grid(x);
+        int gridY = cell_to_grid(y);
         square(gridX, gridY, size);
       }
       if (continuous) {
@@ -27,6 +27,16 @@ void draw() {
       }
     }
   }
+}
+
+// Translate cell coordinates to grid coordinates.
+int cell_to_grid(int cell) {
+  return cell * size;
+}
+
+// Translate grid coordinates to cell coordinates.
+int grid_to_cell(int grid) {
+  return grid / size; // Integer division results in the floor of the floating point value.
 }
 
 void update() {
@@ -73,11 +83,18 @@ int n(int x, int y) {
 
 // Randomize grid.
 void randomize() {
-  // TODO
+  for (int x = 0; x < 10; x++) {
+    for (int y = 0; y < 10; y++) {
+      cells[x][y] = round(noise(x, y));
+    }
+  }
 }
 
+// Click on cells to turn them live.
 void mousePressed() {
-  
+  int x = grid_to_cell(mouseX);
+  int y = grid_to_cell(mouseY);
+  cells[x][y] = 1;
 }
 
 void keyPressed() {
