@@ -1,5 +1,5 @@
 # CONWAY'S GAME OF LIFE
-An implementation in Processing by Kaylah Facey.
+_An implementation in Processing by Kaylah Facey._
 
 Instructions:
 * c,C - Mass extinction of all cells. (Clear the grid to all black *and switch to single-step mode*.)
