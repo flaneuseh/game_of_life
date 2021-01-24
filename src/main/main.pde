@@ -1,13 +1,27 @@
+// README
+// 
+// CONWAY'S GAME OF LIFE
+// An implementation in Processing by Kaylah Facey.
+//
+// c,C - Mass extinction of all cells. (Clear the grid to all black *and switch to single-step mode*.)
+// r,R - Randomize the state of the grid (each cell is black or white with equal probability).
+// g,G - Toggle between single-step and continuous update mode.
+// space bar - Switch to single-step mode and take one simulation step.
+// Hover over a cell to "preview" toggling it. Click to *toggle* it between white and black.
+
+
 color black = color(0);
 color white = color(255);
+color lightgrey = color(170);
+color darkgrey = color(85);
 int side = 100;
 int[][] cells = new int[side][side];
 int[][] neighbors = new int[side][side];
-int size = 10;
+int size = 9;
 boolean continuous = false; // Whether to draw in continuous or single step mode.
 
 void setup() {
-  size(1000, 1000);
+  size(900, 900);
 }
 
 void draw() {
@@ -25,6 +39,18 @@ void draw() {
   if (continuous) {
     update(); 
   }
+  // Show location of mouse cell.
+  int cellX = grid_to_cell(mouseX);
+  int cellY = grid_to_cell(mouseY);
+  int gridX = cell_to_grid(cellX);
+  int gridY = cell_to_grid(cellY);
+  if (cells[cellX][cellY] == 0) {
+    fill(lightgrey);
+  } else {
+    fill(darkgrey);
+  }
+  square(gridX, gridY, size);
+  fill(white);
 }
 
 // Update all cell values for the next draw.
@@ -95,8 +121,7 @@ void randomize() {
 void mousePressed() {
   int x = grid_to_cell(mouseX);
   int y = grid_to_cell(mouseY);
-  cells[x][y] = 1;
-  println("Clicked " + x + ", " + y);
+  cells[x][y] = abs(cells[x][y] - 1); // Flip the cell
 }
 
 void keyPressed() {
@@ -105,6 +130,7 @@ void keyPressed() {
     case ('C'):
       // Mass extinction!
       cells = new int[side][side];
+      continuous = false;
       println("Mass extinction!");
       break;
     case ('r'):
@@ -114,11 +140,11 @@ void keyPressed() {
       break;
     case ('g'):
     case ('G'):
-      println("Toggle stepping");
+      println("Toggle step updates.");
       continuous = !continuous;
       break;
     case (' '):
-      println("Step update");
+      println("Step.");
       continuous = false;
       update();
       break;
