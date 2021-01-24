@@ -1,29 +1,54 @@
 color black = color(0);
 color white = color(255);
-int side = 10;
+int side = 100;
 int[][] cells = new int[side][side];
+int[][] neighbors = new int[side][side];
 int size = 10;
 boolean continuous = false; // Whether to draw in continuous or single step mode.
 
 void setup() {
   size(1000, 1000);
-  
 }
 
 void draw() {
   background(black);
-  
-  for (int x = 0; x < 10; x++) {
-    for (int y = 0; y < 10; y++) {
+  for (int x = 0; x < side; x++) {
+    for (int y = 0; y < side; y++) {
       // Populate grid.
       if (cells[x][y] == 1) {
         int gridX = cell_to_grid(x);
         int gridY = cell_to_grid(y);
         square(gridX, gridY, size);
       }
-      if (continuous) {
-        // Updating every loop.
-        update(x, y);
+    }
+  }
+  if (continuous) {
+    update(); 
+  }
+}
+
+// Update all cell values for the next draw.
+void update() {
+  // We loop twice so that cells don't change values based on their
+  // neighbors' new values.
+  for (int x = 0; x < side; x++) {
+    for (int y = 0; y < side; y++) {
+      neighbors[x][y] = n(x, y);
+    }
+  }
+  for (int x = 0; x < side; x++) {
+    for (int y = 0; y < side; y++) {
+      switch (neighbors[x][y]) {
+        case 2:
+          // Stasis.
+          break;
+        case 3:
+          // Birth.
+          cells[x][y] = 1;
+          break;
+        default:
+          // Death.
+          cells[x][y] = 0;
       }
     }
   }
@@ -37,30 +62,6 @@ int cell_to_grid(int cell) {
 // Translate grid coordinates to cell coordinates.
 int grid_to_cell(int grid) {
   return grid / size; // Integer division results in the floor of the floating point value.
-}
-
-void update() {
-  for (int x = 0; x < 10; x++) {
-    for (int y = 0; y < 10; y++) {
-      update(x, y);
-    }
-  }
-}
-
-// Update cell x, y for the next draw.
-void update(int x, int y) {
-  switch (n(x, y)) {
-    case 2:
-      // Stasis.
-      break;
-    case 3:
-      // Birth.
-      cells[x][y] = 1;
-      break;
-    default:
-      // Death.
-      cells[x][y] = 0;
-  }
 }
 
 // The number of live neighbors of cell x,y.
@@ -83,9 +84,9 @@ int n(int x, int y) {
 
 // Randomize grid.
 void randomize() {
-  for (int x = 0; x < 10; x++) {
-    for (int y = 0; y < 10; y++) {
-      cells[x][y] = round(noise(x, y));
+  for (int x = 0; x < side; x++) {
+    for (int y = 0; y < side; y++) {
+      cells[x][y] = round(random(1));
     }
   }
 }
@@ -95,6 +96,7 @@ void mousePressed() {
   int x = grid_to_cell(mouseX);
   int y = grid_to_cell(mouseY);
   cells[x][y] = 1;
+  println("Clicked " + x + ", " + y);
 }
 
 void keyPressed() {
@@ -103,16 +105,20 @@ void keyPressed() {
     case ('C'):
       // Mass extinction!
       cells = new int[side][side];
+      println("Mass extinction!");
       break;
     case ('r'):
     case ('R'):
       randomize();
+      println("Randomize");
       break;
     case ('g'):
     case ('G'):
+      println("Toggle stepping");
       continuous = !continuous;
       break;
     case (' '):
+      println("Step update");
       continuous = false;
       update();
       break;
